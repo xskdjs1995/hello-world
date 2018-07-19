@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+	<style type="text/css">
+		#wrap{
+			width: 400px;
+			height: 500px;
+			margin: 0 auto;
+			border:1px solid red;
+			position: relative;
+		}
+		ul,li{
+			padding: 0;
+			margin: 0;
+			list-style: none;
+		}
+		ul{
+			height: 12px;
+			/*width: */
+			/*border:1px solid black;*/
+			font-size: 0;/* 解决inline-block 识别空格*/
+			/*overflow: hidden;*/
+			position: absolute;
+			/*border: 1px solid black;*/
+
+		}
+		li{
+			width: 10px;
+			height: 10px;
+			border:1px solid green;
+			
+			background: blue;
+			/*display: inline-block;*/
+			position: absolute;
+			/*float: left;*/
+		}
+		/*#lia{
+			width: 100px;
+			height: 100px;
+			position: absolute;
+			top: 100px;
+			background: red;
+
+		}*/
+	</style>
+</head>
+<body>
+	<!-- http://www.zhangxinxu.com/wordpress/2012/04/inline-block-space-remove-%E5%8E%BB%E9%99%A4%E9%97%B4%E8%B7%9D/ -->
+	<div id="wrap">
+		
+	</div>
+	
+	<script type="text/javascript">
+		function addli(father,index,createnum) {
+			console.log(index);
+			
+			var ul = $("<ul>");
+			father.append(ul);
+			for (var i = 0; i < createnum; i++) {
+				var li = $("<li>");
+				li.css({
+					top:0,
+					left:12 * i 
+				});
+				li.appendTo(ul);
+			}
+			ul.css({
+				width:12 * createnum,
+				bottom: 12 * index
+			});
+
+			move(ul,$('#wrap'));	
+		}
+
+		
+		function move(tag,father) {
+			tag.animate({
+				left:father.width() - tag.width()
+			},1800,function () {
+				tag.animate({
+					left:0
+				},1800,function () {
+					move(tag,father)
+				});
+			});
+		}
+
+		function remove(before, current) {
+			var left = $(before.children()[0]).position().left;
+
+			var before_left = before.position().left + left;
+			var current_left = current.position().left;
+			var difference = current_left - before_left;
+
+			var value = Math.abs(difference);;
+			var num = parseInt(value / 12);
+			
+			if (difference < 0 ) {
+				removeanimate(current,num,"left");
+
+			}else{
+				removeanimate(current,num,"right");
+			}
+			return num;
+
+		}
+		function removeanimate(father,num,direction) {
+			var lis = $(father.children());
+			
+			if (direction == "left") {
+				var i = 0;
+				var timer = setInterval(function () {
+					$(lis[i]).animate({
+						top:'30px',
+						opacity: 0.4
+					},400,function (argument) {
+						this.remove();
+						
+					});
+					i++;
+					
+					if (i >= num) {
+						clearInterval(timer);
+					}
+				},100)
+			}else{
+				var k = 0;
+				var n = lis.length - 1;
+				var timer2 = setInterval(function () {
+				
+					$(lis[n]).animate({
+						top:'30px',
+						opacity: 0
+					},200,function (argument) {
+						this.remove();
+						// alert("k=" + k + " n=" + n + " mum=" + num);
+						
+					});
+					 k++;
+					 n--;
+					  
+					if (k >= num) {
+						clearInterval(timer2);
+					}
+				},100)
+			}
+
+		}
+
+		
+
+
+		var index = 0;
+		var createnum = 20;
+		$("#wrap").click(function () {
+			 $($('ul')[$('ul').length -1 ]).stop();
+
+			 
+			 if ($('ul').length > 1) {
+				 	a = remove( $($('ul')[$('ul').length -2 ]),$($('ul')[$('ul').length -1 ]));
+				 	createnum =  createnum - a;
+				}
+			
+			addli($("#wrap"),index,createnum);// 添加并移动
+			
+			
+			index++;
+		});
+		/*
+		function removeanimate(father,num) {
+			// var lis = $("li");
+			var lis = $(father.children());
+			// console.log($(lis[0]));
+			
+			var i = 0;
+			var timer = setInterval(function () {
+				
+				
+				$(lis[i]).animate({
+					top:'30px',
+					opacity: 0.4
+				},400,function (argument) {
+					this.remove();
+					
+				});
+				i++;
+				if (i >= num) {
+					clearInterval(timer);
+				}
+			},100)
+			
+				
+		}
+
+		function remove(before, current) {
+			var left =$(before.children()[0]).position().left;
+			
+			var before_left = before.position().left + left;
+			var current_left = current.position().left;
+			var difference = current_left - before_left;
+
+			var direction_left = true;
+			if (difference > 0 ) {
+				direction_left = false;
+			}
+			
+			var value = Math.abs(difference);;
+			var num = parseInt(value / 12);
+			
+			removeanimate(current,num);
+
+
+			
+				if (!direction_left) {
+			
+					for (var j = 0; j < current.children().length; j++) {
+						// console.log(j);
+						$(current.children()[j]).css({
+							left: $(current.children()[j]).position().left -num *12
+						})
+					}
+					console.log( $(current.children()[0]).position().left)
+					
+				}
+				return num;
+	
+			}
+			*/
+	</script>
+</body>
+</html>
